@@ -1,0 +1,50 @@
+version: '3'
+services:
+  caddy:
+    image: URL/caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    volumes:
+      - /opt/compose/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/compose/root_ca.crt:/root_ca.crt:ro
+      #- $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - IP:80:80
+      - IP:443:443
+    network_mode: "host"
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  watchtower:
+    image: URL/containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - NO_COLOR=true
+      - WATCHTOWER_POLL_INTERVAL=21600
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_TIMEOUT=200s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  portainer-agent:
+    image: URL/portainer/agent
+    container_name: portainer-agent
+    hostname: portainer-agent
+    restart: unless-stopped
+    environment:
+      - AGENT_SECRET=${AGENT_SECRET}
+    ports:
+      - IP:9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:
+    external: true

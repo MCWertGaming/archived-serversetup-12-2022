@@ -1,0 +1,46 @@
+[Unit]
+Description=Run docker-compose configuration
+After=network-online.target
+Wants=network-online.target
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+TimeoutStopSec=400
+ExecStartPre=-/usr/bin/docker kill compose
+ExecStartPre=-/usr/bin/docker rm compose
+# not on nexus server
+ExecStartPre=-/usr/bin/docker pull [URL]/infra/docker-compose
+ExecStartPre=-/usr/bin/docker run --name compose --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /opt/compose/docker-compose.yml:/docker-compose.yml:ro \
+    -v /opt/compose/.env:/.env:ro \
+    [URL]/infra/docker-compose down
+ExecStartPre=-/usr/bin/docker run --name compose --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /opt/compose/docker-compose.yml:/docker-compose.yml:ro \
+    -v /opt/compose/.env:/.env:ro \
+    [URL]/infra/docker-compose rm
+ExecStartPre=-/usr/bin/docker run --name compose --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /opt/compose/docker-compose.yml:/docker-compose.yml:ro \
+    -v /opt/compose/.env:/.env:ro \
+# only on nexus server
+    -v /root/.docker/config.json:/root/.docker/config.json:ro \
+    [URL]/infra/docker-compose pull
+ExecStart=/usr/bin/docker run --name compose --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /opt/compose/docker-compose.yml:/docker-compose.yml:ro \
+    -v /opt/compose/.env:/.env:ro \
+    [URL]/infra/docker-compose up -d --remove-orphans
+
+ExecStop=/usr/bin/docker run --name compose --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /opt/compose/docker-compose.yml:/docker-compose.yml:ro \
+    -v /opt/compose/.env:/.env:ro \
+    [URL]/infra/docker-compose down --timeout 300
+
+[Install]
+WantedBy=multi-user.target

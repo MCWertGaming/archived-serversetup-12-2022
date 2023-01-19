@@ -1,0 +1,55 @@
+{
+	email MAIL
+	acme_ca https://URL/acme/acme/directory
+	acme_ca_root /root_ca.crt
+	# step-ca is not supporting that
+	ocsp_stapling off
+}
+adguard.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+nexus.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+gitea.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+drone.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+pve.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+sso.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+portainer.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
+cloud.URL {
+	reverse_proxy https://URL {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}

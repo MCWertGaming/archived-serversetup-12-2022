@@ -1,0 +1,23 @@
+{
+	email [EMAIL]
+	acme_ca https://[URL]/acme/acme/directory
+	acme_ca_root /root_ca.crt
+	# step-ca is not supporting that
+	ocsp_stapling off
+}
+adguard.[URL] {
+	reverse_proxy http://adguard:3000
+}
+portainer.[URL] {
+	reverse_proxy https://portainer:9443 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
+}
+gitea.[URL] {
+	reverse_proxy http://gitea:3000
+}
+drone.[URL] {
+	reverse_proxy http://drone:80
+}

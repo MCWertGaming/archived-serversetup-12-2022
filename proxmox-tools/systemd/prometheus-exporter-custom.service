@@ -1,0 +1,14 @@
+[Unit]
+Description=Custom prometheus metrics
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/tmp
+User=root
+Group=root
+ExecStart=/opt/tools/start.sh
+
+[Install]
+WantedBy=multi-user.target

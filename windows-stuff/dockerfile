@@ -1,0 +1,17 @@
+FROM drone/drone-runner-docker AS builder
+
+FROM mcr.microsoft.com/powershell:nanoserver-ltsc2022
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+COPY --from=builder c:\\drone-runner-docker.exe .
+COPY *.crt .
+COPY ["PKI", "C:/Program Files/PowerShell/Modules/PKI"]
+RUN import-Module PKI
+RUN Import-Certificate -FilePath .\root_ca.crt -CertStoreLocation Cert:\\LocalMachine\\CA\\
+EXPOSE 3000
+ENV GODEBUG netdns=go
+ENV DRONE_PLATFORM_OS windows
+ENV DRONE_PLATFORM_ARCH amd64
+ENV DRONE_PLATFORM_KERNEL 1909
+ENTRYPOINT [ "C:\\drone-runner-docker.exe" ]

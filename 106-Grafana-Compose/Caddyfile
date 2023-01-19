@@ -1,0 +1,10 @@
+{
+	email EMAIL
+	acme_ca https://URL/acme/acme/directory
+	acme_ca_root /root_ca.crt
+	# step-ca is not supporting that
+	ocsp_stapling off
+}
+grafana.URL {
+	reverse_proxy http://grafana:3000
+}

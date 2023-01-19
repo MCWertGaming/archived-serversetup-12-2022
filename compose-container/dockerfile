@@ -1,0 +1,11 @@
+# downloading is done in the ubi-minimal container
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest as builder
+# install and download
+RUN microdnf install wget
+RUN wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O /docker-compose
+# TODO: check hash
+RUN chmod +x /docker-compose
+# the actual container will be a ubi-micro container
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+COPY --from=builder /docker-compose /usr/bin/docker-compose
+ENTRYPOINT [ "/usr/bin/docker-compose" ]

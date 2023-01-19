@@ -1,0 +1,1 @@
+docker run --detach --volume=//./pipe/docker_engine://./pipe/docker_engine --env=DRONE_RPC_PROTO=https --env=DRONE_RPC_HOST=[URL] --env=DRONE_RPC_SECRET=xxx --env=DRONE_RUNNER_CAPACITY=2 --env=DRONE_RUNNER_NAME=win-runner --publish=3000:3000 --restart=always --name=runner --env=DRONE_RPC_SKIP_VERIFY=true drone/drone-runner-docker

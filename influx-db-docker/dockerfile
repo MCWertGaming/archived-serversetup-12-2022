@@ -1,0 +1,14 @@
+ARG INFLUX_VERSION 
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest as builder
+
+RUN microdnf install wget tar gzip \
+    && wget https://dl.influxdata.com/influxdb/releases/influxdb2-2.2.0-linux-amd64.tar.gz -O /influx.tar.gz \
+    && tar -I gzip -xf /influx.tar.gz --strip-components 1 \
+    && mkdir /influx \
+    && mv influxd /influx/influxd
+
+FROM registry.access.redhat.com/ubi8/ubi-micro:latest
+COPY --from=builder --chown=1000:1000 /influx /influx
+USER 1000
+ENTRYPOINT [ "/influx/influxd", "--reporting-disabled" ]

@@ -1,0 +1,8 @@
+FROM registry.access.redhat.com/ubi8-minimal:latest
+COPY root.crt /root.crt
+RUN curl https://download.docker.com/linux/centos/docker-ce.repo > /etc/yum.repos.d/docker-ce.repo \
+    && microdnf install docker-ce-cli \
+    && trust anchor /root.crt \
+    && rm /root.crt
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]

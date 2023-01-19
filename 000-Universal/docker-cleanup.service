@@ -1,0 +1,18 @@
+[Unit]
+Description=Docker cleanup service
+After=network-online.target
+Wants=network-online.target
+Requires=docker.service
+After=docker.service
+Requires=docker-compose.service
+After=docker-compose.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/tmp
+User=root
+Group=root
+ExecStart=/usr/bin/docker system prune -af
+
+[Install]
+WantedBy=multi-user.target

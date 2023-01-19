@@ -1,0 +1,29 @@
+kind: pipeline
+type: docker
+name: default
+clone:
+  skip_verify: true
+trigger:
+  branch:
+  - main
+  event:
+  - push
+  - cron
+  - custom
+steps:
+- name: docker build and push
+  image: URL/drone/docker-push-plugin:latest
+  settings:
+    registry_user:
+      from_secret: registry_user
+    registry_pass:
+      from_secret: registry_pass
+    registry: URL
+    repository: infra/caddy-trusted:latest
+  volumes:
+  - name: docker_socket
+    path: /var/run/docker.sock
+volumes:
+- name: docker_socket
+  host:
+    path: /var/run/docker.sock

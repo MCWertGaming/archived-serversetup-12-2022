@@ -1,0 +1,4 @@
+FROM caddy:latest
+COPY root_ca.crt /root_ca.crt
+RUN cat /root_ca.crt >> /etc/ssl/certs/ca-certificates.crt \
+    && rm /root_ca.crt

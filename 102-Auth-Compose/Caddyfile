@@ -1,0 +1,13 @@
+{
+	email [EMAIL]
+	acme_ca https://[URL]/acme/acme/directory
+	acme_ca_root /root_ca.crt
+	# step-ca is not supporting that
+	ocsp_stapling off
+}
+[URL] {
+	reverse_proxy http://fusionauth:9011 {
+		header_up X-Forwarded-Host [URL]
+        header_up X-Forwarded-Port 443
+	}
+}

@@ -1,0 +1,21 @@
+kind: pipeline
+type: docker
+name: default
+
+platform:
+  os: windows
+
+clone:
+  skip_verify: true
+trigger:
+  branch:
+  - main
+  event:
+  - push
+  - cron
+  - custom
+steps:
+- name: run test script
+  image: mcr.microsoft.com/powershell
+  commands:
+  - .\test.ps1

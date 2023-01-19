@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  drone-runner:
+    image: [URL]/infra/drone-runner-trusted:latest
+    container_name: drone-runner
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_RPC_HOST=URL
+      - DRONE_RPC_PROTO=https
+      - DRONE_RPC_SECRET=${DRONE_SECRET}
+      - DRONE_RUNNER_CAPACITY=2
+      - DRONE_RUNNER_NAME=runner-linux-docker-1
+    ports:
+      - [URL]:3000:3000
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  watchtower:
+    image: [URL]/containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - NO_COLOR=true
+      - WATCHTOWER_POLL_INTERVAL=21600
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_TIMEOUT=200s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  portainer-agent:
+    image: [URL]/portainer/agent:latest
+    container_name: portainer-agent
+    hostname: portainer-agent
+    restart: unless-stopped
+    environment:
+      - AGENT_SECRET=${AGENT_SECRET}
+    ports:
+      - [URL]:9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

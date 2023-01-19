@@ -1,0 +1,96 @@
+version: '3'
+
+services:
+  fusionauth_db:
+    image: [URL]/rhel8/postgresql-12:latest
+    container_name: fusionauth_db
+    restart: unless-stopped
+    environment:
+      - POSTGRESQL_USER=fusionauth
+      - POSTGRESQL_PASSWORD=${FUSIONAUTH_DB_PASS}
+      - POSTGRESQL_DATABASE=fusionauth
+    volumes:
+      - fusionauth_db_data:/var/lib/pgsql/data
+    networks:
+      - fusionauth_db_net
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  fusionauth:
+    image: [URL]/fusionauth/fusionauth-app:latest
+    container_name: fusionauth
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: jdbc:postgresql://fusionauth_db:5432/fusionauth
+      DATABASE_ROOT_USERNAME: fusionauth
+      DATABASE_ROOT_PASSWORD: ${FUSIONAUTH_DB_PASS}
+      DATABASE_USERNAME: fusionauth
+      DATABASE_PASSWORD: ${FUSIONAUTH_DB_PASS}
+      FUSIONAUTH_APP_MEMORY: 512M
+      FUSIONAUTH_APP_RUNTIME_MODE: production
+      FUSIONAUTH_APP_URL: [URL]
+      SEARCH_TYPE: database
+    volumes:
+      - fusionauth_data:/usr/local/fusionauth/config
+    networks:
+      - fusionauth_db_net
+      - caddy_net
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  caddy:
+    image: [URL]/caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    volumes:
+      - /opt/compose/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/compose/root_ca.crt:/root_ca.crt:ro
+      #- $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - 10.10.11.12:80:80
+      - 10.10.11.12:443:443
+    networks:
+      - caddy_net
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  watchtower:
+    image: [URL]/containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - NO_COLOR=true
+      - WATCHTOWER_POLL_INTERVAL=21600
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_TIMEOUT=200s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  portainer-agent:
+    image: URL/portainer/agent
+    container_name: portainer-agent
+    hostname: portainer-agent
+    restart: unless-stopped
+    environment:
+      - AGENT_SECRET=${AGENT_SECRET}
+    ports:
+      - 10.10.11.12:9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+volumes:
+  fusionauth_db_data:
+    external: true
+  fusionauth_data:
+    external: true
+  caddy_data:
+    external: true
+  caddy_config:
+    external: true
+
+networks:
+  caddy_net:
+  fusionauth_db_net:

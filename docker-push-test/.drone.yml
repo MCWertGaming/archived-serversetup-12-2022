@@ -1,0 +1,27 @@
+kind: pipeline
+type: docker
+name: default
+
+clone:
+  skip_verify: true
+
+steps:
+- name: docker build and push
+  image: URL/drone/docker-push-plugin:latest
+  volumes:
+  - name: docker_socket
+    path: /var/run/docker.sock
+  settings:
+      registry_user:
+        from_secret: registry_user
+      registry_pass:
+        from_secret: registry_pass
+      registry: URL
+      repository: test
+      enable_buildkit: true
+      enable_push: true
+
+volumes:
+- name: docker_socket
+  host:
+    path: /var/run/docker.sock

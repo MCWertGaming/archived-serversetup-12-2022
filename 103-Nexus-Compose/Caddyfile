@@ -1,0 +1,19 @@
+{
+	email [EMAIL]
+	acme_ca https://URL/acme/acme/directory
+	acme_ca_root /root_ca.crt
+	# step-ca is not supporting that
+	ocsp_stapling off
+}
+nexus.URL {
+	reverse_proxy http://nexus:8081
+}
+docker-proxy.URL {
+	reverse_proxy http://nexus:8082
+}
+docker-linux.URL {
+	reverse_proxy http://nexus:8083
+}
+docker-windows.URL {
+	reverse_proxy http://nexus:8084
+}
